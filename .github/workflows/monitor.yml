@@ -1,0 +1,53 @@
+name: US market monitor
+
+on:
+  schedule:
+    # GitHub Actions cron is UTC. These lines map to the SGT slots.
+    # SGT 08:00, 12:00, 16:00, 00:00, 04:00
+    - cron: "0 0,4,8,16,20 * * *"
+    # SGT 19:00, 20:00, 21:00
+    - cron: "0 11,12,13 * * *"
+    # SGT 21:15
+    - cron: "15 13 * * *"
+    # SGT 21:30 through 04:30
+    - cron: "30 13,14,15,16,17,18,19,20 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Send a test email even outside the daily window
+        type: boolean
+        default: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r cloud/requirements.txt
+      - name: Run monitor
+        env:
+          EMAIL_PROVIDER: ${{ secrets.EMAIL_PROVIDER }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_USE_SSL: ${{ secrets.SMTP_USE_SSL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          PORTFOLIO_JSON: ${{ secrets.PORTFOLIO_JSON }}
+          DRY_RUN: ${{ vars.DRY_RUN }}
+          FORCE_EMAIL: ${{ inputs.force }}
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            python cloud_monitor.py --force --dry-run
+          elif [ "$FORCE_EMAIL" = "true" ]; then
+            python cloud_monitor.py --force
+          else
+            python cloud_monitor.py
+          fi

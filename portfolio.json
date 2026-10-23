@@ -1,0 +1,8 @@
+{
+  "nav_usd": null,
+  "risk_per_trade_pct": 0.5,
+  "max_positions": 2,
+  "positions": [],
+  "watchlist": [],
+  "notes": "Personal holdings and watchlist are injected through the PORTFOLIO_JSON secret and are not committed to this public repository."
+}

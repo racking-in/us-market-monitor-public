@@ -1,0 +1,6 @@
+cloud/.env
+cloud/cloud_monitor.log
+monitor_report.md
+monitor_output.json
+__pycache__/
+*.pyc
