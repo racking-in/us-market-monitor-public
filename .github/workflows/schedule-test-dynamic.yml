@@ -1,0 +1,14 @@
+name: Schedule test dynamic
+
+on:
+  schedule:
+    - cron: "37 13 * * *"
+    - cron: "38 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping
+        run: echo "dynamic schedule test at $(date -u)"
