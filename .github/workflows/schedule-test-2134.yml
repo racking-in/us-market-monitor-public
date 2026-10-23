@@ -1,0 +1,14 @@
+name: Schedule test 2134
+
+on:
+  schedule:
+    - cron: "34 13 * * *"
+    - cron: "35 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping
+        run: echo "schedule test at $(date -u)"
